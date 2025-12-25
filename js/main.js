@@ -139,9 +139,10 @@ function fireworksTick() {
 requestAnimationFrame(fireworksTick);
 // Make sure something happens immediately
 burst(window.innerWidth/2, window.innerHeight*0.35, ['#ff7bd7','#ffd089','#6bd5ff','#a3ff78']);
-// Start showing photos immediately
+// Preload and show first photo immediately
+loadPhoto(photoFiles[0]);
 photoAlpha = 0.45;
-console.log('Birthday site initialized');
+console.log('Birthday site initialized - photos:', photoFiles.length, 'alpha:', photoAlpha);
 
 // Auto ambient fireworks (保留)
 setInterval(()=>{
