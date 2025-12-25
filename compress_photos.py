@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""压缩照片到合适的网页尺寸"""
+"""压缩照片到合适的网页尺寸（保留 EXIF 方向）"""
 import os
 from PIL import Image
 
@@ -7,10 +7,31 @@ PHOTO_DIR = 'assets/photos'
 MAX_SIZE = 1200  # 最大宽度/高度
 QUALITY = 85  # JPEG 质量 (0-100)
 
+def rotate_by_exif(img):
+    """根据 EXIF 方向信息旋转图片"""
+    try:
+        from PIL import ExifTags
+        exif_data = img._getexif()
+        if exif_data is not None:
+            for tag, value in exif_data.items():
+                if tag == 274:  # Orientation tag
+                    if value == 3:
+                        img = img.rotate(180, expand=True)
+                    elif value == 6:
+                        img = img.rotate(270, expand=True)
+                    elif value == 8:
+                        img = img.rotate(90, expand=True)
+    except:
+        pass
+    return img
+
 def compress_image(filepath):
     """压缩单个图片"""
     try:
         with Image.open(filepath) as img:
+            # 根据 EXIF 旋转
+            img = rotate_by_exif(img)
+            
             # 转换 RGBA 到 RGB（如果需要）
             if img.mode in ('RGBA', 'LA', 'P'):
                 rgb_img = Image.new('RGB', img.size, (255, 255, 255))
@@ -53,3 +74,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
